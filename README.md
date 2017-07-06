@@ -1,2 +1,2 @@
-# RabbitMQ__simple_examples
+# RabbitMQ_examples
 Simple examples with RabbitMQ
