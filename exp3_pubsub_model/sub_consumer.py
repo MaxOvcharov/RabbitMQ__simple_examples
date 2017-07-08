@@ -29,9 +29,12 @@ task_counter = 1
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = conn.channel()
-channel.queue_declare(queue='task_queue', durable=True)
-print(' [*] Waiting for messages. Delay:{0}, Number of workers: {1}.\n'
-      ' To exit press CTRL+C'.format(callback_delay, worker_number))
+channel.exchange_declare(exchange='logs', exchange_type='fanout')
+res = channel.queue_declare(exclusive=True)
+queue_name = res.method.queue
+channel.queue_bind(exchange='logs', queue=queue_name)
+print(' [*] Waiting for messages. Queue name: {0}, Delay: {1}, Number of workers: {2}.\n'
+      ' To exit press CTRL+C'.format(queue_name, callback_delay, worker_number))
 
 
 def callback(ch, method, properties, body):
@@ -45,7 +48,5 @@ def callback(ch, method, properties, body):
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
-
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(callback, queue='task_queue')
+channel.basic_consume(callback, queue=queue_name, no_ack=True)
 channel.start_consuming()
