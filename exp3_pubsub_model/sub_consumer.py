@@ -48,5 +48,5 @@ def callback(ch, method, properties, body):
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
-channel.basic_consume(callback, queue=queue_name, no_ack=True)
+channel.basic_consume(callback, queue=queue_name)
 channel.start_consuming()
