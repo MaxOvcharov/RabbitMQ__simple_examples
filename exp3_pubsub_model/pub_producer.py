@@ -9,16 +9,11 @@ from elizabeth import Text
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = conn.channel()
-channel.queue_declare(queue='task_queue', durable=True)
+channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
 
 def send_msg(payload):
-    channel.basic_publish(exchange='',
-                          routing_key='task_queue',
-                          body=payload,
-                          properties=pika.BasicProperties(
-                              delivery_mode=2,  # make message persistent
-                          ))
+    channel.basic_publish(exchange='logs', routing_key='', body=payload)
     print('[x] Send: %s, message_type: %s' % (payload, type(payload)))
 
 
