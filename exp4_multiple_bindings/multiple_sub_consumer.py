@@ -39,7 +39,6 @@ task_counter = 1
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = conn.channel()
 channel.exchange_declare(exchange='direct_message', exchange_type='direct')
-
 res = channel.queue_declare(exclusive=True)
 queue_name = res.method.queue
 channel.queue_bind(exchange='direct_message', queue=queue_name, routing_key=routing_key)
@@ -51,7 +50,7 @@ def callback(ch, method, properties, body):
     global task_counter
     client_message = json.loads(body)
     print(' [x] Received: %s, message_type: %s, routing_key: %s'
-          % (client_message, type(client_message),method.routing_key))
+          % (client_message, type(client_message), method.routing_key))
     if callback_delay:
         time.sleep(callback_delay)
     ch.basic_ack(delivery_tag=method.delivery_tag)
