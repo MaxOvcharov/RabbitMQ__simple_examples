@@ -16,8 +16,8 @@ def parse_args_for_init_worker():
                       help='ADDING DELAY INTO CALLBACK FUNCTION',
                       type='int', default=None)
     parser.add_option('-w', '--worker', dest='worker_number',
-                      help='MIGRATE TABLES',
-                      action='store_true', default=1)
+                      help='CREATE NUMBER OF WORKERS',
+                      type='int', default=1)
     options, args = parser.parse_args()
 
     return options
