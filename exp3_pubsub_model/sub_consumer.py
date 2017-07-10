@@ -40,8 +40,8 @@ print(' [*] Waiting for messages. Queue name: {0}, Delay: {1}, Number of workers
 def callback(ch, method, properties, body):
     global task_counter
     client_message = json.loads(body)
-    print(' [x] Received: %s, message_type: %s' % (client_message,
-                                                   type(client_message)))
+    print(' [x] Received: {0}, message_type: {1}'.format(client_message,
+                                                         type(client_message)))
     if callback_delay:
         time.sleep(callback_delay)
     ch.basic_ack(delivery_tag=method.delivery_tag)

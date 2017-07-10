@@ -11,8 +11,8 @@ print(' [*] Waiting for messages. To exit press CTRL+C')
 
 def callback(ch, method, properties, body):
     client_message = json.loads(body)
-    print(' [x] Received: %s, message_type: %s' % (client_message,
-                                                   type(client_message)))
+    print(' [x] Received: {0}, message_type: {1}'.format(client_message,
+                                                         type(client_message)))
 
 channel.basic_consume(callback, queue='client_msg_queue', no_ack=True)
 channel.start_consuming()

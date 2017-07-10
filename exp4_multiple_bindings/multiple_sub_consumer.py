@@ -49,8 +49,8 @@ print(' [*] Waiting for messages. Routing key: {0}, Delay: {1}, Number of worker
 def callback(ch, method, properties, body):
     global task_counter
     client_message = json.loads(body)
-    print(' [x] Received: %s, message_type: %s, routing_key: %s'
-          % (client_message, type(client_message), method.routing_key))
+    print(' [x] Received: {0}, message_type: {1}, routing_key: {2}'
+          .format(client_message, type(client_message), method.routing_key))
     if callback_delay:
         time.sleep(callback_delay)
     ch.basic_ack(delivery_tag=method.delivery_tag)

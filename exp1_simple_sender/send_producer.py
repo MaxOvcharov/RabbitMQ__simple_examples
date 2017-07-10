@@ -15,7 +15,7 @@ channel.queue_declare(queue='client_msg_queue')
 def send_msg(payload):
     channel.basic_publish(exchange='', routing_key='client_msg_queue',
                           body=payload)
-    print('[x] Send: %s, message_type: %s' % (payload, type(payload)))
+    print(' [x] Send: {0}, message_type: {1}'.format(payload, type(payload)))
 
 
 def main():

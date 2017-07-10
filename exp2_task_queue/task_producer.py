@@ -19,7 +19,7 @@ def send_msg(payload):
                           properties=pika.BasicProperties(
                               delivery_mode=2,  # make message persistent
                           ))
-    print('[x] Send: %s, message_type: %s' % (payload, type(payload)))
+    print(' [x] Send: {0}, message_type: {1}'.format(payload, type(payload)))
 
 
 def main():

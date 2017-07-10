@@ -17,8 +17,8 @@ channel.exchange_declare(exchange='direct_message', exchange_type='direct')
 
 def send_msg(payload, routing_key):
     channel.basic_publish(exchange='direct_message', routing_key=routing_key, body=payload)
-    print('[x] Send: %s, message_type: %s, routing_key: %s' % (payload, type(payload),
-                                                               routing_key))
+    print(' [x] Send: {0}, message_type: {1}, routing_key: {2}'.format(payload, type(payload),
+                                                                       routing_key))
 
 
 def main():
