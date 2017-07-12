@@ -13,11 +13,11 @@ MSG_TYPE = ['sendMessage', 'sendHistory', 'sendCallback']
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = conn.channel()
-channel.exchange_declare(exchange='direct_message', exchange_type='direct')
+channel.exchange_declare(exchange='topic_message', exchange_type='topic')
 
 
 def send_msg(payload, routing_key):
-    channel.basic_publish(exchange='direct_message', routing_key=routing_key, body=payload)
+    channel.basic_publish(exchange='topic_message', routing_key=routing_key, body=payload)
     print(' [x] Send: {0}, message_type: {1}, routing_key: {2}'.format(payload, type(payload),
                                                                        routing_key))
 

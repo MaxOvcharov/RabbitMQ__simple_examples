@@ -25,7 +25,7 @@ def parse_args_for_init_worker():
                       type='int')
     options, args = parser.parse_args()
     if not options.routing_key:
-        parser.error('Routing key is mandatory for running worker. Example: -routing_key 1,'
+        parser.error('Routing key is mandatory for running worker. Example: --routing_key 1,'
                      ' choose the first routing_key from SERVER_LIST= {}'.format(SERVER_LIST))
 
     return options
