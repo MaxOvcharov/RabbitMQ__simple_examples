@@ -1,2 +1,3 @@
-pika==0.10.0
+aioamqp==0.10.0
 elizabeth==0.4.0
+pika==0.10.0
