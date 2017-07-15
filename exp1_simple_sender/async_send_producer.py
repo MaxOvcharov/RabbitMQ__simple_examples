@@ -4,10 +4,7 @@
 """
 import aioamqp
 import asyncio
-import functools
 import json
-import os
-import signal
 
 from elizabeth import Text
 
@@ -23,7 +20,7 @@ def send_msg(payload, channel):
 def send():
     try:
         client_msg = Text()
-        payload = dict(message=None, msg_id=0)
+        payload = dict(message=None, msg_id=0, producer_type='ASYNC')
         msg_count = 1
 
         transport, protocol = yield from aioamqp.connect()
@@ -34,7 +31,7 @@ def send():
             payload['msg_id'] = msg_count
             yield from send_msg(json.dumps(payload), channel)
             msg_count += 1
-            yield from asyncio.sleep(3)
+            yield from asyncio.sleep(0.003)
     except KeyboardInterrupt:
         yield from protocol.close()
         transport.close()
@@ -42,20 +39,18 @@ def send():
 
 def main():
 
-    def ask_exit(signame):
-        print("got signal %s: exit" % signame)
-        loop.stop()
-
+    # Side note: Apparently, async() will be deprecated in 3.4.4.
+    # See: https://docs.python.org/3.4/library/asyncio-task.html#asyncio.async
+    tasks = asyncio.gather(asyncio.async(send()))
     loop = asyncio.get_event_loop()
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame),
-                                functools.partial(ask_exit, signame))
-
-    print("Event loop running forever, press Ctrl+C to interrupt.")
-    print("pid %s: send SIGINT or SIGTERM to exit." % os.getpid())
     try:
-        loop.run_until_complete(send())
+        loop.run_until_complete(tasks)
         loop.run_forever()
+    except KeyboardInterrupt as e:
+        print("Caught keyboard interrupt. Canceling tasks...")
+        tasks.cancel()
+        loop.run_forever()
+        tasks.exception()
     finally:
         loop.close()
 
