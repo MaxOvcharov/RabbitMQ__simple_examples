@@ -21,14 +21,14 @@ def send_msg(payload):
 def main():
     try:
         client_msg = Text()
-        payload = dict(message=None, msg_id=0)
+        payload = dict(message=None, msg_id=0, producer_type='SYNC')
         msg_count = 1
         while True:
             payload['message'] = client_msg.sentence()
             payload['msg_id'] = msg_count
             send_msg(json.dumps(payload))
             msg_count += 1
-            time.sleep(3)
+            time.sleep(0.003)
     except KeyboardInterrupt:
         conn.close()
         sys.exit()
