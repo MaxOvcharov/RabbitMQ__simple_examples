@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple async worker(consumer) example implementation using aioamqp.
+"""
+
+import asyncio
+import aioamqp
+import functools
 import json
-import pika
-import time
+import os
+import signal
 
 from optparse import OptionParser
 
@@ -27,25 +34,54 @@ callback_delay = opt.callback_delay
 worker_number = opt.worker_number
 task_counter = 1
 
-conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = conn.channel()
-channel.queue_declare(queue='task_queue', durable=True)
-print(' [*] Waiting for messages. Delay:{0}, Number of workers: {1}.\n'
-      ' To exit press CTRL+C'.format(callback_delay, worker_number))
 
-
-def callback(ch, method, properties, body):
+@asyncio.coroutine
+def callback(channel, body, envelope, properties):
     global task_counter
     client_message = json.loads(body)
-    print(' [x] Received: {0}, message_type: {1}'.format(client_message,
-                                                         type(client_message)))
+    print(' [x] Received: {0}, message_type: {1}'.
+          format(client_message, type(client_message)))
     if callback_delay:
-        time.sleep(callback_delay)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+        yield from asyncio.sleep(task_counter)
+
+    yield from channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
 
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(callback, queue='task_queue')
-channel.start_consuming()
+@asyncio.coroutine
+def receive_worker():
+    try:
+        transport, protocol = yield from aioamqp.connect('localhost', 5672)
+        channel = yield from protocol.channel()
+        yield from channel.queue(queue_name='task_queue', durable=True)
+        yield from channel.basic_qos(prefetch_count=1, connection_global=False)
+        yield from channel.basic_consume(callback, queue_name='task_queue')
+    except aioamqp.AmqpClosedConnection:
+        print("closed connections")
+        return
+
+
+def main():
+
+    def ask_exit(signame):
+        print("got signal %s: exit" % signame)
+        loop.stop()
+
+    loop = asyncio.get_event_loop()
+    for signame in ('SIGINT', 'SIGTERM'):
+        loop.add_signal_handler(getattr(signal, signame),
+                                functools.partial(ask_exit, signame))
+
+    print(' [*] Waiting for messages. Delay:{0}, Number of workers: {1}.\n'
+          ' Press CTRL+C or send SIGINT or SIGTERM to exit. PID: {2}'.
+          format(callback_delay, worker_number, os.getpid()))
+    try:
+        loop.run_until_complete(receive_worker())
+        loop.run_forever()
+    finally:
+        loop.close()
+
+if __name__ == '__main__':
+    main()
+

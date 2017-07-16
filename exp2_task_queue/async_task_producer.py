@@ -12,12 +12,10 @@ def send_msg(payload, channel):
     yield from channel.basic_publish(payload=payload, exchange_name='',
                                      routing_key='task_queue',
                                      properties={'delivery_mode': 2})
-    yield from channel.basic_publish(payload=payload, exchange_name='',
-                                     routing_key='client_msg_queue')
 
 
 @asyncio.coroutine
-def worker():
+def send_worker():
     try:
         client_msg = Text()
         payload = dict(message=None, msg_id=0, producer_type='ASYNC')
@@ -42,7 +40,7 @@ def worker():
 def main():
     # Side note: Apparently, async() will be deprecated in 3.4.4.
     # See: https://docs.python.org/3.4/library/asyncio-task.html#asyncio.async
-    tasks = asyncio.gather(asyncio.async(worker()))
+    tasks = asyncio.gather(asyncio.async(send_worker()))
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(tasks)
