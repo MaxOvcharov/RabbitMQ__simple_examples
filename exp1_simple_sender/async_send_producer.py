@@ -17,7 +17,7 @@ def send_msg(payload, channel):
 
 
 @asyncio.coroutine
-def send():
+def worker():
     try:
         client_msg = Text()
         payload = dict(message=None, msg_id=0, producer_type='ASYNC')
@@ -32,6 +32,9 @@ def send():
             yield from send_msg(json.dumps(payload), channel)
             msg_count += 1
             yield from asyncio.sleep(0.003)
+    except aioamqp.AmqpClosedConnection:
+        print("closed connections")
+        return
     except KeyboardInterrupt:
         yield from protocol.close()
         transport.close()
@@ -41,7 +44,7 @@ def main():
 
     # Side note: Apparently, async() will be deprecated in 3.4.4.
     # See: https://docs.python.org/3.4/library/asyncio-task.html#asyncio.async
-    tasks = asyncio.gather(asyncio.async(send()))
+    tasks = asyncio.gather(asyncio.async(worker()))
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(tasks)
