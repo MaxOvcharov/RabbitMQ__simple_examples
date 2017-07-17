@@ -20,7 +20,7 @@ def send_msg(payload):
 def main():
     try:
         client_msg = Text()
-        payload = dict(message=None, msg_id=0)
+        payload = dict(message=None, msg_id=0, producer_type='SYNC')
         msg_count = 1
         while True:
             payload['message'] = client_msg.sentence()
