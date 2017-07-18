@@ -21,8 +21,9 @@ def parse_args_for_init_worker():
                       help='CREATE NUMBER OF WORKERS',
                       type='int', default=1)
     parser.add_option('-k', '--routing_key', dest='routing_key',
-                      help='CHOSE ROUTING KEY FROM SERVER_LIST = {}'.format(SERVER_LIST),
-                      type='int')
+                      help='CHOSE INDEX(STARTS FROM 1) OF ROUTING '
+                           'KEY FROM SERVER_LIST = {}'.format(SERVER_LIST),
+                      type='int', default=0)
     options, args = parser.parse_args()
     if not options.routing_key:
         parser.error('Routing key is mandatory for running worker. Example: --routing_key 1,'
@@ -33,7 +34,7 @@ def parse_args_for_init_worker():
 opt = parse_args_for_init_worker()
 callback_delay = opt.callback_delay
 worker_number = opt.worker_number
-routing_key = SERVER_LIST[opt.routing_key]
+routing_key = SERVER_LIST[opt.routing_key - 1]
 task_counter = 1
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
