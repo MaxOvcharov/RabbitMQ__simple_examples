@@ -11,21 +11,19 @@ import os
 import signal
 
 
-@asyncio.coroutine
-def callback(channel, body, envelope, properties):
+async def callback(channel, body, envelope, properties):
     client_message = json.loads(body)
     print(' [x] Received: {0}, message_type: {1}'.format(client_message,
                                                          type(client_message)))
 
 
-@asyncio.coroutine
-def receive():
-    transport, protocol = yield from aioamqp.connect()
-    channel = yield from protocol.channel()
+async def receive():
+    transport, protocol = await aioamqp.connect()
+    channel = await protocol.channel()
 
-    yield from channel.queue_declare(queue_name='client_msg_queue')
+    await channel.queue_declare(queue_name='client_msg_queue')
 
-    yield from channel.basic_consume(callback, queue_name='client_msg_queue')
+    await channel.basic_consume(callback, queue_name='client_msg_queue', no_ack=True)
 
 
 def main():
