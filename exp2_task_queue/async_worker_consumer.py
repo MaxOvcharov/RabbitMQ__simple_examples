@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Simple async worker(consumer) example implementation using aioamqp.
+    Simple task consumer(worker) example implementation using aioamqp.
 """
 
 import asyncio
@@ -35,28 +35,26 @@ worker_number = opt.worker_number
 task_counter = 1
 
 
-@asyncio.coroutine
-def callback(channel, body, envelope, properties):
+async def callback(channel, body, envelope, properties):
     global task_counter
     client_message = json.loads(body)
     print(' [x] Received: {0}, message_type: {1}'.
           format(client_message, type(client_message)))
     if callback_delay:
-        yield from asyncio.sleep(task_counter)
+        await asyncio.sleep(task_counter)
 
-    yield from channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
+    await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
 
-@asyncio.coroutine
-def receive_worker():
+async def receive_worker():
     try:
-        transport, protocol = yield from aioamqp.connect('localhost', 5672)
-        channel = yield from protocol.channel()
-        yield from channel.queue(queue_name='task_queue', durable=True)
-        yield from channel.basic_qos(prefetch_count=1, connection_global=False)
-        yield from channel.basic_consume(callback, queue_name='task_queue')
+        transport, protocol = await aioamqp.connect('localhost', 5672)
+        channel = await protocol.channel()
+        await channel.queue(queue_name='task_queue', durable=True)
+        await channel.basic_qos(prefetch_count=1, connection_global=False)
+        await channel.basic_consume(callback, queue_name='task_queue')
     except aioamqp.AmqpClosedConnection:
         print("closed connections")
         return
