@@ -36,15 +36,12 @@ async def send():
 
 
 def main():
-
-    # Side note: Apparently, async() will be deprecated in 3.4.4.
-    # See: https://docs.python.org/3.4/library/asyncio-task.html#asyncio.async
     tasks = asyncio.gather(send())
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(tasks)
         loop.run_forever()
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         print("Caught keyboard interrupt. Canceling tasks...")
         tasks.cancel()
         loop.run_forever()

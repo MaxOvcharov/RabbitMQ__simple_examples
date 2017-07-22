@@ -3,8 +3,23 @@
 
 ##### Example №1 - Simple RabbitMQ example
 ###### SYNC mode
-
+First run consumer:
+```
+python receive_consumer.py
+```
+Than run producer:
+```
+python send_producer.py
+```
 ###### ASYNC mode
+First run async consumer:
+```
+python async_receive_consumer.py
+```
+Than run async producer:
+```
+python async_send_producer.py
+```
 
 ##### Example №2 - Task RabbitMQ example
 ###### SYNC mode
