@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple task consumer(worker) example implementation using pika.
+"""
 import json
 import pika
 import time
+import sys
 
 from optparse import OptionParser
 
@@ -14,24 +18,20 @@ def parse_args_for_init_worker():
     parser = OptionParser()
     parser.add_option('-d', '--delay', dest='callback_delay',
                       help='ADDING DELAY INTO CALLBACK FUNCTION',
-                      type='int', default=None)
-    parser.add_option('-w', '--worker', dest='worker_number',
-                      help='CREATE NUMBER OF WORKERS',
-                      type='int', default=1)
+                      type='int', default=0)
     options, args = parser.parse_args()
 
     return options
 
 opt = parse_args_for_init_worker()
 callback_delay = opt.callback_delay
-worker_number = opt.worker_number
 task_counter = 1
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = conn.channel()
 channel.queue_declare(queue='task_queue', durable=True)
-print(' [*] Waiting for messages. Delay:{0}, Number of workers: {1}.\n'
-      ' To exit press CTRL+C'.format(callback_delay, worker_number))
+print(' [*] Waiting for messages. Delay:{0}.\n To exit press CTRL+C'.
+      format(callback_delay))
 
 
 def callback(ch, method, properties, body):
@@ -46,6 +46,14 @@ def callback(ch, method, properties, body):
     task_counter += 1
 
 
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(callback, queue='task_queue')
-channel.start_consuming()
+def main():
+    try:
+        channel.basic_qos(prefetch_count=1)
+        channel.basic_consume(callback, queue='task_queue')
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        conn.close()
+        sys.exit()
+
+if __name__ == '__main__':
+    main()

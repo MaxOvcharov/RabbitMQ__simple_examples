@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple queue task producer example implementation using pika.
+"""
 import pika
 import json
 import time
