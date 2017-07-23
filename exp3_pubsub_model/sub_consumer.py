@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple pub/sub example implementation using pika
+"""
 import json
 import pika
 import time
+import sys
 
 from optparse import OptionParser
 
@@ -15,16 +19,12 @@ def parse_args_for_init_worker():
     parser.add_option('-d', '--delay', dest='callback_delay',
                       help='ADDING DELAY INTO CALLBACK FUNCTION',
                       type='int', default=None)
-    parser.add_option('-w', '--worker', dest='worker_number',
-                      help='CREATE NUMBER OF WORKERS',
-                      type='int', default=1)
     options, args = parser.parse_args()
 
     return options
 
 opt = parse_args_for_init_worker()
 callback_delay = opt.callback_delay
-worker_number = opt.worker_number
 task_counter = 1
 
 conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -33,8 +33,8 @@ channel.exchange_declare(exchange='logs', exchange_type='fanout')
 res = channel.queue_declare(exclusive=True)
 queue_name = res.method.queue
 channel.queue_bind(exchange='logs', queue=queue_name)
-print(' [*] Waiting for messages. Queue name: {0}, Delay: {1}, Number of workers: {2}.\n'
-      ' To exit press CTRL+C'.format(queue_name, callback_delay, worker_number))
+print(' [*] Waiting for messages. Queue name: {0}, Delay: {1}.\n'
+      ' To exit press CTRL+C'.format(queue_name, callback_delay))
 
 
 def callback(ch, method, properties, body):
@@ -48,5 +48,14 @@ def callback(ch, method, properties, body):
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
-channel.basic_consume(callback, queue=queue_name)
-channel.start_consuming()
+
+def main():
+    try:
+        channel.basic_consume(callback, queue=queue_name)
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        conn.close()
+        sys.exit()
+
+if __name__ == '__main__':
+    main()
