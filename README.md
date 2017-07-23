@@ -41,9 +41,23 @@ python async_task_producer.py
 ```
 ##### Example №3 - PUB/SUB RabbitMQ mode
 ###### SYNC mode
-
+First run subscriber worker:
+```bash
+python sub_consumer.py
+```
+Than run publisher worker:
+```bash
+python pub_producer.py
+```
 ###### ASYNC mode
-
+First run async subscriber worker:
+```bash
+python async_sub_consumer.py
+```
+Than run async publisher worker:
+```bash
+python async_pub_producer.py
+```
 ### ============== Installing RabbitMQ ===============
 
 1) Updating system's default application toolset:
