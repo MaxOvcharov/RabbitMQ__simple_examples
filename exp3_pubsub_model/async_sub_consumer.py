@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Simple async pub/sub example
+    Simple async pub/sub example implementation using aioamqp
 """
 import asyncio
 import aioamqp
@@ -34,30 +34,28 @@ worker_number = opt.worker_number
 task_counter = 1
 
 
-@asyncio.coroutine
-def callback(channel, body, envelope, properties):
+async def callback(channel, body, envelope, properties):
     global task_counter
     client_message = json.loads(body)
     print(' [x] Received: {0}, message_type: {1}'.
           format(client_message, type(client_message)))
     if callback_delay:
-        yield from asyncio.sleep(task_counter)
+        await asyncio.sleep(task_counter)
     print('DONE TASK: {}'.format(task_counter))
     task_counter += 1
 
 
-@asyncio.coroutine
-def sub_worker():
+async def sub_worker():
 
     try:
-        transport, protocol = yield from aioamqp.connect('localhost', 5672)
-        channel = yield from protocol.channel()
-        yield from channel.exchange(exchange_name='logs', type_name='fanout')
+        transport, protocol = await aioamqp.connect('localhost', 5672)
+        channel = await protocol.channel()
+        await channel.exchange(exchange_name='logs', type_name='fanout')
         # let RabbitMQ generate a random queue name
-        result = yield from channel.queue(queue_name='', exclusive=True)
+        result = await channel.queue(queue_name='', exclusive=True)
         queue_name = result['queue']
-        yield from channel.queue_bind(exchange_name='logs', queue_name=queue_name, routing_key='')
-        yield from channel.basic_consume(callback, queue_name=queue_name, no_ack=True)
+        await channel.queue_bind(exchange_name='logs', queue_name=queue_name, routing_key='')
+        await channel.basic_consume(callback, queue_name=queue_name, no_ack=True)
     except aioamqp.AmqpClosedConnection:
         print("closed connections")
         return
