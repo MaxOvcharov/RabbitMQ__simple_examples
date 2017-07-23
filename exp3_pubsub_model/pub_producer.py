@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple pub/sub example implementation using pika
+"""
 import pika
 import json
 import time
