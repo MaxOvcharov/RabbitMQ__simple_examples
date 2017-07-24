@@ -21,16 +21,12 @@ def parse_args_for_init_worker():
     parser.add_option('-d', '--delay', dest='callback_delay',
                       help='ADDING DELAY INTO CALLBACK FUNCTION',
                       type='int', default=None)
-    parser.add_option('-w', '--worker', dest='worker_number',
-                      help='CREATE NUMBER OF WORKERS',
-                      type='int', default=1)
     options, args = parser.parse_args()
 
     return options
 
 opt = parse_args_for_init_worker()
 callback_delay = opt.callback_delay
-worker_number = opt.worker_number
 task_counter = 1
 
 
@@ -72,9 +68,9 @@ def main():
         loop.add_signal_handler(getattr(signal, signame),
                                 functools.partial(ask_exit, signame))
 
-    print(' [*] Waiting for messages. Delay:{0}, Number of workers: {1}.\n'
-          ' Press CTRL+C or send SIGINT or SIGTERM to exit. PID: {2}'.
-          format(callback_delay, worker_number, os.getpid()))
+    print(' [*] Waiting for messages. Delay:{0}.\n'
+          ' Press CTRL+C or send SIGINT or SIGTERM to exit. PID: {1}'.
+          format(callback_delay, os.getpid()))
     try:
         loop.run_until_complete(sub_worker())
         loop.run_forever()
