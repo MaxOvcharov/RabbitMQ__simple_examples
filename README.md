@@ -58,6 +58,26 @@ Than run async publisher worker:
 ```bash
 python async_pub_producer.py
 ```
+##### Example №4 - DIRECT ROUTING RabbitMQ mode
+###### SYNC mode
+First run subscriber worker with direct routing:
+```bash
+python direct_consumer.py -k 2
+```
+Than run publisher worker with direct routing:
+```bash
+python direct_producer.py
+```
+###### ASYNC mode
+First run async subscriber worker with direct routing:
+```bash
+python async_direct_consumer.py -k 1
+```
+Than run async publisher worker with direct routing:
+```bash
+python async_direct_producer.py
+```
+
 ### ============== Installing RabbitMQ ===============
 
 1) Updating system's default application toolset:
