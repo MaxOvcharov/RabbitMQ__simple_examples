@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+    Simple RPC client example implementation using pika
+"""
 import pika
 import uuid
+
 
 class FibonacciRpcClient(object):
     def __init__(self):

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple RPC client example implementation using pika
+"""
 import pika
+import sys
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='localhost'))
-
-channel = connection.channel()
-
+conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = conn.channel()
 channel.queue_declare(queue='rpc_queue')
 
 
@@ -29,10 +30,18 @@ def on_request(ch, method, props, body):
                      properties=pika.BasicProperties(
                          correlation_id=props.correlation_id),
                      body=str(response))
-    ch.basic_ack(delivery_tag = method.delivery_tag)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(on_request, queue='rpc_queue')
 
-print(" [x] Awaiting RPC requests")
-channel.start_consuming()
+def main():
+    try:
+        channel.basic_qos(prefetch_count=1)
+        channel.basic_consume(on_request, queue='rpc_queue')
+        print(" [x] Awaiting RPC requests")
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        conn.close()
+        sys.exit()
+
+if __name__ == '__main__':
+    main()
