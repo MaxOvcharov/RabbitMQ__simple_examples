@@ -60,23 +60,35 @@ python async_pub_producer.py
 ```
 ##### Example №4 - DIRECT ROUTING RabbitMQ mode
 ###### SYNC mode
-First run subscriber worker with direct routing:
+First run consumer worker with direct routing:
 ```bash
 python direct_consumer.py -k 2
 ```
-Than run publisher worker with direct routing:
+Than run producer worker with direct routing:
 ```bash
 python direct_producer.py
 ```
 ###### ASYNC mode
-First run async subscriber worker with direct routing:
+First run async consumer worker with direct routing:
 ```bash
 python async_direct_consumer.py -k 1
 ```
-Than run async publisher worker with direct routing:
+Than run async producer worker with direct routing:
 ```bash
 python async_direct_producer.py
 ```
+##### Example №5 - TOPIC ROUTING RabbitMQ mode
+###### SYNC mode
+First run consumer worker with topic routing:
+```bash
+python topic_consumer.py -k s1 '*'
+```
+Than run producer worker with topic routing:
+```bash
+python topic_producer.py
+```
+###### ASYNC mode
+
 
 ### ============== Installing RabbitMQ ===============
 
