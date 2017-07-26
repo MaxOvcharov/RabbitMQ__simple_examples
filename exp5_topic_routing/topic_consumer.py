@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+    Simple consumer example with 'topic' routing implementation using pika
+"""
 import json
 import pika
 import time

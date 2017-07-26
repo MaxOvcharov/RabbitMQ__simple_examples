@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Simple async example of multiple consumer with direct routing using aioamqp
+    Simple async example of consumer with direct routing using aioamqp
 """
 import asyncio
 import aioamqp

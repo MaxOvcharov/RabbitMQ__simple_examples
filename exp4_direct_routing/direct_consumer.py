@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Simple multiple connection(direct routing) system example implementation using pika
+    Simple consumer example with 'direct' routing implementation using pika
 """
 import json
 import pika
