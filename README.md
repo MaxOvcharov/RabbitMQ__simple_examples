@@ -88,8 +88,14 @@ Than run producer worker with topic routing:
 python topic_producer.py
 ```
 ###### ASYNC mode
-
-
+First run async consumer worker with topic routing:
+```bash
+python async_topic_consumer.py -k s1 '*'
+```
+Than run async producer worker with topic routing:
+```bash
+python async_topic_producer.py
+```
 ### ============== Installing RabbitMQ ===============
 
 1) Updating system's default application toolset:
