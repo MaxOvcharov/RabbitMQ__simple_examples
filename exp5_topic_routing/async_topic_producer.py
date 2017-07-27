@@ -33,7 +33,7 @@ async def topic_pub_worker():
             routing_key = choice(SERVER_LIST) + '.' + choice(MSG_TYPE)
             await send_topic_msg(json.dumps(payload), channel, routing_key)
             msg_count += 1
-            await asyncio.sleep(0.003)
+            await asyncio.sleep(1)
     except aioamqp.AmqpClosedConnection:
         print("closed connections")
         return
