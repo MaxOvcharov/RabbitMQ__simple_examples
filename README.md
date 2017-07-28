@@ -96,6 +96,25 @@ Than run async producer worker with topic routing:
 ```bash
 python async_topic_producer.py
 ```
+##### Example №6 - RPC example with RabbitMQ
+###### SYNC mode
+First run RPC client implementation:
+```bash
+python rpc_client.py
+```
+Than run RPC server implementation:
+```bash
+python rpc_server.py
+```
+###### ASYNC mode
+First run async RPC client implementation:
+```bash
+python async_rpc_client.py
+```
+Than run async RPC server implementation:
+```bash
+python async_rpc_server.py
+```
 ### ============== Installing RabbitMQ ===============
 
 1) Updating system's default application toolset:
