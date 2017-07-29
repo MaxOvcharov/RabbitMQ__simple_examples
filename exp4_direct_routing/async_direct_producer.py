@@ -43,7 +43,7 @@ async def direct_pub_worker():
 
 
 def main():
-    tasks = asyncio.gather(asyncio.async(direct_pub_worker()))
+    tasks = asyncio.gather(direct_pub_worker())
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(tasks)

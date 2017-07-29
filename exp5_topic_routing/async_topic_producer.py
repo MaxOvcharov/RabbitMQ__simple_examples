@@ -43,7 +43,7 @@ async def topic_pub_worker():
 
 
 def main():
-    tasks = asyncio.gather(asyncio.async(topic_pub_worker()))
+    tasks = asyncio.gather(topic_pub_worker())
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(tasks)
