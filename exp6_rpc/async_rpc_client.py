@@ -6,6 +6,7 @@
 import asyncio
 import aioamqp
 import uuid
+from random import randint
 
 
 class FibonacciRpcClient(object):
@@ -53,10 +54,12 @@ async def async_rpc_client():
         while True:
             fibonacci_rpc = FibonacciRpcClient()
             try:
-                fib_num = int(input('Enter Fibonacci number: '))
+                # fib_num = int(input('Enter Fibonacci number: '))
+                fib_num = randint(0, 10)
                 print(' [x] Run remote command: fib({})'.format(fib_num))
                 res = await fibonacci_rpc.call(fib_num)
                 print(' [.] Got result from remote server: {}'.format(res))
+                # await asyncio.sleep(0.5)
             except ValueError as e:
                 print('Input wrong fibonacci num: {0}. Error: {1}'.format(fib_num, e))
     except KeyboardInterrupt:
