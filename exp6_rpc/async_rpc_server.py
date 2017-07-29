@@ -15,14 +15,14 @@ async def fib(n):
 
 async def on_request(channel, body, envelope, properties):
     try:
-        n = int(body)
-        print(" [.] Run command: fib(%s)" % n)
-        response = await fib(n)
+        fib_num = int(body)
+        print(" [.] Run command: fib(%s)" % fib_num)
+        response = await fib(fib_num)
         await channel.basic_publish(payload=str(response), exchange_name='',
                                     routing_key=properties.reply_to,
                                     properties={'correlation_id': properties.correlation_id})
     except ValueError as e:
-        pass
+        print('Input wrong fibonacci num: {0}. Error: {1}'.format(fib_num, e))
     await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
 
 async def async_rpc_server():
@@ -48,10 +48,8 @@ def main():
         loop.run_until_complete(tasks)
         loop.run_forever()
     except KeyboardInterrupt:
-        print("Caught keyboard interrupt. Canceling tasks...")
+        print("/nCaught keyboard interrupt. Canceling tasks...")
         tasks.cancel()
-        loop.run_forever()
-        tasks.exception()
     finally:
         loop.close()
 
