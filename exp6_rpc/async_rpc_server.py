@@ -1,47 +1,59 @@
 # -*- coding: utf-8 -*-
 """
-    Simple RPC client example implementation using pika
+    RPC server, aioamqp implementation of RPC examples
 """
-import pika
-import sys
+import asyncio
+import aioamqp
 
-conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = conn.channel()
-channel.queue_declare(queue='rpc_queue')
-
-
-def fib(n):
+async def fib(n):
     if n == 0:
         return 0
     elif n == 1:
         return 1
     else:
-        return fib(n-1) + fib(n-2)
+        return await fib(n - 1) + await fib(n - 2)
 
+async def on_request(channel, body, envelope, properties):
+    try:
+        n = int(body)
+        print(" [.] Run command: fib(%s)" % n)
+        response = await fib(n)
+        await channel.basic_publish(payload=str(response), exchange_name='',
+                                    routing_key=properties.reply_to,
+                                    properties={'correlation_id': properties.correlation_id})
+    except ValueError as e:
+        pass
+    await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
 
-def on_request(ch, method, props, body):
-    n = int(body)
-
-    print(" [.] fib(%s)" % (n,))
-    response = fib(n)
-
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(
-                         correlation_id=props.correlation_id),
-                     body=str(response))
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+async def async_rpc_server():
+    try:
+        transport, protocol = await aioamqp.connect()
+        channel = await protocol.channel()
+        await channel.queue_declare(queue_name='rpc_queue')
+        await channel.basic_qos(prefetch_count=1, prefetch_size=0, connection_global=False)
+        await channel.basic_consume(on_request, queue_name='rpc_queue')
+        print(" [x] Awaiting RPC requests")
+    except aioamqp.AmqpClosedConnection:
+        print("closed connections")
+        return
+    except KeyboardInterrupt:
+        await protocol.close()
+        transport.close()
 
 
 def main():
+    tasks = asyncio.gather(async_rpc_server())
+    loop = asyncio.get_event_loop()
     try:
-        channel.basic_qos(prefetch_count=1)
-        channel.basic_consume(on_request, queue='rpc_queue')
-        print(" [x] Awaiting RPC requests")
-        channel.start_consuming()
+        loop.run_until_complete(tasks)
+        loop.run_forever()
     except KeyboardInterrupt:
-        conn.close()
-        sys.exit()
+        print("Caught keyboard interrupt. Canceling tasks...")
+        tasks.cancel()
+        loop.run_forever()
+        tasks.exception()
+    finally:
+        loop.close()
 
 if __name__ == '__main__':
     main()
