@@ -47,14 +47,20 @@ class FibonacciRpcClient(object):
         await self.protocol.close()
         return int(self.response)
 
-
 async def async_rpc_client():
-    fibonacci_rpc = FibonacciRpcClient()
-    while True:
-        fib_num = input('Enter Fibonacci number: ')
-        print(' [x] Run remote command: fib(%s)' % fib_num)
-        res = await fibonacci_rpc.call(30)
-        print(' [.] Got result from remote server: %r' % res)
+    try:
+        fib_num = None
+        while True:
+            fibonacci_rpc = FibonacciRpcClient()
+            try:
+                fib_num = int(input('Enter Fibonacci number: '))
+                print(' [x] Run remote command: fib({})'.format(fib_num))
+                res = await fibonacci_rpc.call(fib_num)
+                print(' [.] Got result from remote server: {}'.format(res))
+            except ValueError as e:
+                print('Input wrong fibonacci num: {0}. Error: {1}'.format(fib_num, e))
+    except KeyboardInterrupt:
+        print("\n Caught keyboard interrupt while inputting fibonacci num...")
 
 
 def main():
@@ -65,8 +71,6 @@ def main():
     except KeyboardInterrupt:
         print("Caught keyboard interrupt. Canceling tasks...")
         tasks.cancel()
-        loop.run_forever()
-        tasks.exception()
     finally:
         loop.close()
 
