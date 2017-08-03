@@ -157,6 +157,7 @@ sudo rabbitmq-plugins enable rabbitmq_management
 http://localhost:15672/
 ```
 [**PRODUCTION RABBITMQ SERVER CONFIGURATION**](http://www.rabbitmq.com/production-checklist.html)
+[**DESCRIPTION FOR CONFIGURATION FILE FIELDS**](http://www.rabbitmq.com/configure.html#config-location)
 
 ### ============== Managing RabbitMQ =================
 
