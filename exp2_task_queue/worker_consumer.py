@@ -36,7 +36,7 @@ print(' [*] Waiting for messages. Delay:{0}.\n To exit press CTRL+C'.
 
 def callback(ch, method, properties, body):
     global task_counter
-    client_message = json.loads(body)
+    client_message = json.loads(body.decode('utf-8'))
     print(' [x] Received: {0}, message_type: {1}'.format(client_message,
                                                          type(client_message)))
     if callback_delay:

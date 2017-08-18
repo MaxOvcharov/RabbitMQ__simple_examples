@@ -9,7 +9,7 @@ channel.queue_declare(queue='client_msg_queue')
 
 
 def callback(ch, method, properties, body):
-    client_message = json.loads(body)
+    client_message = json.loads(body.decode('utf-8'))
     print(' [x] Received: {0}, message_type: {1}'.format(client_message,
                                                          type(client_message)))
 

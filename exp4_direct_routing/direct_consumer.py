@@ -49,7 +49,7 @@ print(' [*] Waiting for messages. Routing key: {0}, Delay: {1}.\n'
 
 def callback(ch, method, properties, body):
     global task_counter
-    client_message = json.loads(body)
+    client_message = json.loads(body.decode('utf-8'))
     print(' [x] Received: {0}, message_type: {1}, routing_key: {2}'
           .format(client_message, type(client_message), method.routing_key))
     if callback_delay:

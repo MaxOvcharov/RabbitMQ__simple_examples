@@ -41,7 +41,7 @@ task_counter = 1
 
 async def callback(channel, body, envelope, properties):
     global task_counter
-    client_message = json.loads(body)
+    client_message = json.loads(body.decode('utf-8'))
     print(' [x] Received: {0}, message_type: {1}, routing_key: {2}'
           .format(client_message, type(client_message), envelope.routing_key))
     if callback_delay:

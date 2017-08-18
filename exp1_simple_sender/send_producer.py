@@ -28,7 +28,7 @@ def main():
             payload['msg_id'] = msg_count
             send_msg(json.dumps(payload))
             msg_count += 1
-            time.sleep(0.003)
+            time.sleep(1)
     except KeyboardInterrupt:
         conn.close()
         sys.exit()

@@ -20,7 +20,7 @@ def fib(n):
 
 
 def on_request(ch, method, props, body):
-    n = int(body)
+    n = int(body.decode('utf-8'))
 
     print(" [.] fib(%s)" % (n,))
     response = fib(n)
