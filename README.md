@@ -144,6 +144,10 @@ sudo apt-get install rabbitmq-server
 ```bash
 sudo vim /etc/default/rabbitmq-server
 ```
+7) Uninstall RabbitMQ:
+```bash
+sudo apt-get remove rabbitmq-server
+```
 
 ### ======== Enabling the Management Console =========
 
@@ -159,7 +163,7 @@ http://localhost:15672/
 [**PRODUCTION RABBITMQ SERVER CONFIGURATION**](http://www.rabbitmq.com/production-checklist.html)
 [**DESCRIPTION FOR CONFIGURATION FILE FIELDS**](http://www.rabbitmq.com/configure.html#config-location)
 
-### ============== Managing RabbitMQ =================
+### ============== Managing RabbitMQ server =================
 
 1) To start the service:
 ```bash
@@ -177,6 +181,17 @@ service rabbitmq-server restart
 ```bash
 service rabbitmq-server status
 ```
+
+### ============== Managing RabbitMQ =================
+1) Add new user:
+```bash
+sudo rabbitmqctl add_user <USER_NAME> <PSWD>
+sudo rabbitmqctl set_user_tags <USER_NAME> administrator
+sudo rabbitmqctl set_permissions -p / <USER_NAME> "^<USER_NAME>-.*" ".*" ".*"
+sudo service rabbitmq-server restart
+sudo rabbitmqctl list_users
+```
+**OR add user with the help rabbitmq_management**
 
 ### == How to Create a Cluster On a Single Machine ===
 
@@ -198,7 +213,7 @@ RABBITMQ_NODE_PORT=5673 RABBITMQ_SERVER_START_ARGS="-rabbitmq_management listene
 rabbitmqctl -n <YOUR_NODE_NAME> status
 ```
 5) Stop RabbitMQ node:
-```bash 
+```bash
 rabbitmqctl -n <YOUR_NODE_NAME> stop_app
 ```
 6) Run RabbitMQ node:
